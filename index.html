@@ -17,7 +17,7 @@ input,select,textarea{width:100%;background:var(--wood);border:1px solid var(--s
 .chip{flex:none;border:1px solid var(--stone);background:none;color:var(--ink);border-radius:20px;padding:8px 14px;font:inherit;font-size:15px}
 .chip.on{background:var(--brass);color:#1a1412;border-color:var(--brass)}
 .chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-#cave{padding:6px 10px;display:flex;flex-direction:column}
+#cave{padding:4px 8px;overflow:auto}#cave svg{display:block;width:calc(100% * var(--z,1));height:auto}
 .row{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:-14px}
 .bin{position:relative;border:2px solid #5a4030;border-bottom:0;border-radius:999px 999px 0 0/70% 70% 0 0;background:linear-gradient(#34241a,#241812);min-height:92px;padding:20px 5px 18px;color:inherit;font:inherit;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-end;justify-content:center}
 .bin.full{border-color:var(--brass)}
@@ -45,7 +45,7 @@ video{width:100%;border-radius:14px;background:#000}
 .stat{display:flex;justify-content:space-between;padding:6px 0;color:var(--mute)}.stat b{color:var(--ink)}
 .lbl{color:var(--mute);font-size:15px}
 </style></head><body>
-<header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><button class="icon" id="menu" aria-label="Menu">☰</button></header>
+<header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><div style="display:flex;gap:8px"><button class="icon" id="zo" aria-label="Dézoomer">−</button><button class="icon" id="zi" aria-label="Zoomer">+</button><button class="icon" id="menu" aria-label="Menu">☰</button></div></header>
 <div class="tools"><input id="q" type="search" placeholder="Chercher : nom, année, région…"><div class="chips" id="chips"></div></div>
 <div id="cave"></div>
 <button id="add">+ Ajouter une bouteille</button>
@@ -63,17 +63,39 @@ function close(){$('ov').classList.remove('on');stopScan()}
 $('ov').onclick=e=>{if(e.target.id=='ov')close()};
 const match=b=>(!f||b.color==f)&&(!q||[b.name,b.vintage,b.region,b.appellation,b.notes].join(' ').toLowerCase().includes(q));
 const inBin=n=>S.b.filter(b=>b.bin==n);
+const CY0=58,RW=539,FL=308,M=6;
+const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
+function slotsFor(inside,rx,ry,cap){let s=19,c=[];for(;s>=6;s--){c=[];let ri=0;for(let y=ry+60;y>ry-60;y-=s*.87,ri++)for(let x=rx-60+(ri%2?s/2:0);x<=rx+60;x+=s)if(inside(x,y))c.push([x,y]);if(c.length>=cap)break}
+ c.sort((a,b)=>dist(a[0],a[1],rx,ry)-dist(b[0],b[1],rx,ry));c=c.slice(0,cap).sort((a,b)=>a[1]-b[1]||a[0]-b[0]);return{pts:c,r:Math.min(5,Math.max(2.5,s/2-.8))}}
+const GEO={};
+for(let j=0;j<6;j++){const n=j+1,jx=j*100,cy=CY0;
+ const p=j==0?`M0,0H50V${cy-50}A50,50 0 0 0 0,${cy}Z`:`M${jx-50},0H${jx+50}V${cy-50}A50,50 0 0 0 ${jx},${cy}A50,50 0 0 0 ${jx-50},${cy-50}Z`;
+ const ins=(x,y)=>x>=M&&x<=RW-M&&y>=M&&y<=cy-2&&Math.abs(x-jx)<50&&dist(x,y,jx-50,cy)>50+M&&dist(x,y,jx+50,cy)>50+M;
+ GEO[n]={p,lab:[j==0?14:jx,-9],...slotsFor(ins,jx,cy-30,CAP[n])}}
+for(let r=0;r<6;r++)for(let c=0;c<6;c++){const n=7+r*6+c,cx=(r%2?0:50)+100*c,cy=CY0+50*r,cu=r<5;
+ const vx=(Math.max(cx-50,0)+Math.min(cx+50,RW))/2;
+ const p=cu?`M${cx-50},${cy}A50,50 0 0 1 ${cx+50},${cy}A50,50 0 0 0 ${cx},${cy+50}A50,50 0 0 0 ${cx-50},${cy}Z`:`M${cx-50},${cy}A50,50 0 0 1 ${cx+50},${cy}Z`;
+ const ins=(x,y)=>{if(x<M||x>RW-M)return false;
+  if(y<=(cu?cy:cy-M))return dist(x,y,cx,cy)<=50-M;
+  return cu&&y<=cy+50-M&&Math.abs(x-cx)<50-M&&dist(x,y,cx-50,cy+50)>50+M&&dist(x,y,cx+50,cy+50)>50+M};
+ GEO[n]={p,lab:[vx,cy-38],...slotsFor(ins,vx,cy+3,CAP[n])}}
+let Z=1;
 function render(){
  $('sub').textContent=S.b.length+' bouteille'+(S.b.length>1?'s':'')+' sur 476';
  $('chips').innerHTML=`<button class="chip ${f?'':'on'}" data-f="">Toutes</button>`+Object.keys(COL).map(k=>`<button class="chip ${f==k?'on':''}" data-f="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('');
  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{f=c.dataset.f;render()});
- const act=f||q;let h='';
- for(let r=0;r<7;r++){h+='<div class="row">';for(let c=0;c<6;c++){const n=r*6+c+1,bs=inBin(n),cap=CAP[n],hit=act&&bs.some(match);
-  h+=`<button class="bin ${bs.length>=cap?'full':''} ${hit?'hit':''}" data-n="${n}"><span class="n">${n}</span>`+
-  bs.map(b=>`<span class="d ${act&&!match(b)?'dim':''}" style="background:${COL[b.color]||'#888'}"></span>`).join('')+
-  '<span class="d e"></span>'.repeat(Math.max(0,cap-bs.length))+`<span class="c">${bs.length}/${cap}</span></button>`}h+='</div>'}
- $('cave').innerHTML=h;document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>showBin(+b.dataset.n));
+ const act=f||q;
+ let h=`<svg viewBox="-10 -18 559 340"><defs><clipPath id="cl"><rect x="0" y="0" width="${RW}" height="${FL}"/></clipPath><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0,6L6,0" stroke="#c9a45c" stroke-width=".8"/></pattern><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a20"/><stop offset="1" stop-color="#241812"/></linearGradient></defs>
+ <rect x="-6" y="-6" width="${RW+6}" height="6" fill="url(#ht)"/><rect x="-6" y="0" width="6" height="${FL}" fill="url(#ht)"/><g clip-path="url(#cl)">`;
+ for(let n=1;n<=42;n++){const g=GEO[n],bs=inBin(n),hit=act&&bs.some(match),full=bs.length>=g.pts.length;
+  h+=`<g class="bn" data-n="${n}" style="cursor:pointer"><path d="${g.p}" fill="url(#gr)" stroke="${hit?'#fff':full?'#c9a45c':'#6b4a34'}" stroke-width="${hit?2.2:1.2}"/>`+
+  g.pts.map((p,i)=>{const b=bs[i];return b?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="${COL[b.color]||'#888'}" stroke="#0007" stroke-width=".6" opacity="${act&&!match(b)?.18:1}"/>`:`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="none" stroke="#6b523f" stroke-width=".7" stroke-dasharray="1.6 1.6"/>`}).join('')+'</g>'}
+ h+=`</g><line x1="0" y1="${FL}" x2="${RW}" y2="${FL}" stroke="#c9a45c" stroke-width="2"/><line x1="${RW}" y1="0" x2="${RW}" y2="${FL}" stroke="#6b4a34" stroke-width="1"/>`;
+ for(let n=1;n<=42;n++){const g=GEO[n];h+=`<text x="${g.lab[0]}" y="${g.lab[1]}" text-anchor="middle" font-size="8" fill="#a8957c" pointer-events="none">${n}</text>`}
+ $('cave').innerHTML=h+'</svg>';$('cave').style.setProperty('--z',Z);
+ document.querySelectorAll('.bn').forEach(b=>b.onclick=()=>showBin(+b.dataset.n));
 }
+$('zi').onclick=()=>{Z=Math.min(3,Z+.5);render()};$('zo').onclick=()=>{Z=Math.max(1,Z-.5);render()};
 $('q').oninput=e=>{q=e.target.value.toLowerCase().trim();render()};
 function showBin(n){const bs=inBin(n);
  open(`<h2>Casier ${n}</h2><div class="lbl">${bs.length} sur ${CAP[n]} places</div>`+
