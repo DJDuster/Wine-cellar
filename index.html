@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ma Cave</title><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#1a1412">
+<style>
+:root{--bg:#1a1412;--wood:#2b1d15;--stone:#3a2a20;--ink:#f1e6d2;--mute:#a8957c;--brass:#c9a45c;--wine:#8e2236;--r:#8e2236;--b:#e6c85a;--ro:#ec9fae;--bu:#c9d6a3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 system-ui,sans-serif;padding-bottom:90px}
+h1,h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;margin:0}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 8px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:30px;color:var(--brass)}
+.sub{color:var(--mute);font-size:15px}
+.icon{background:none;border:1px solid var(--stone);color:var(--ink);border-radius:12px;width:46px;height:46px;font-size:22px}
+.tools{padding:0 16px 10px;position:sticky;top:0;background:var(--bg);z-index:5}
+input,select,textarea{width:100%;background:var(--wood);border:1px solid var(--stone);color:var(--ink);border-radius:12px;padding:13px;font:inherit}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto}
+.chip{flex:none;border:1px solid var(--stone);background:none;color:var(--ink);border-radius:20px;padding:8px 14px;font:inherit;font-size:15px}
+.chip.on{background:var(--brass);color:#1a1412;border-color:var(--brass)}
+.chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+#cave{padding:6px 10px;display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:-14px}
+.bin{position:relative;border:2px solid #5a4030;border-bottom:0;border-radius:999px 999px 0 0/70% 70% 0 0;background:linear-gradient(#34241a,#241812);min-height:92px;padding:20px 5px 18px;color:inherit;font:inherit;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-end;justify-content:center}
+.bin.full{border-color:var(--brass)}
+.bin .n{position:absolute;top:7px;left:0;right:0;text-align:center;font-size:12px;color:var(--mute)}
+.bin .c{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute)}
+.bin.hit{border-color:#fff;box-shadow:0 0 14px var(--brass)}
+.d{width:11px;height:11px;border-radius:50%;border:1px solid #0006}
+.d.e{background:none;border:1px dashed #6b523f}
+.d.dim{opacity:.18}
+#add{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));background:var(--wine);color:var(--ink);border:0;border-radius:16px;padding:18px;font:inherit;font-size:19px;font-weight:600;z-index:6;box-shadow:0 6px 20px #0008}
+.ov{position:fixed;inset:0;background:#000a;z-index:20;display:none;align-items:flex-end}
+.ov.on{display:flex}
+.sheet{background:var(--wood);width:100%;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));animation:up .22s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h2{font-size:25px;color:var(--brass);margin-bottom:12px}
+label{display:block;color:var(--mute);font-size:14px;margin:12px 0 4px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font:inherit;font-weight:600;margin-top:10px;background:var(--stone);color:var(--ink)}
+.btn.p{background:var(--wine)}.btn.g{background:var(--brass);color:#1a1412}.btn.x{background:none;border:1px solid #7a3a3a;color:#e29a9a}
+.li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--stone)}
+.li .d{width:20px;height:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ph{width:100%;max-height:240px;object-fit:contain;border-radius:12px;background:#0004;margin-bottom:8px}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--brass);color:#1a1412;padding:10px 18px;border-radius:20px;z-index:40;display:none}
+video{width:100%;border-radius:14px;background:#000}
+.stat{display:flex;justify-content:space-between;padding:6px 0;color:var(--mute)}.stat b{color:var(--ink)}
+.lbl{color:var(--mute);font-size:15px}
+</style></head><body>
+<header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><button class="icon" id="menu" aria-label="Menu">☰</button></header>
+<div class="tools"><input id="q" type="search" placeholder="Chercher : nom, année, région…"><div class="chips" id="chips"></div></div>
+<div id="cave"></div>
+<button id="add">+ Ajouter une bouteille</button>
+<div class="ov" id="ov"><div class="sheet" id="sh"></div></div><div id="toast"></div>
+<script>
+const CAP={};for(let i=1;i<=42;i++)CAP[i]=15;[1,2,3,4,5,6,37].forEach(i=>CAP[i]=3);[12,13,24,25,36].forEach(i=>CAP[i]=6);[38,39,40,41,42].forEach(i=>CAP[i]=10);
+const COL={rouge:'#8e2236',blanc:'#e6c85a',rose:'#ec9fae',bulles:'#c9d6a3'},LB={rouge:'Rouge',blanc:'Blanc',rose:'Rosé',bulles:'Bulles'};
+let S;try{S=JSON.parse(localStorage.getItem('cave'))}catch(e){}S=S||{b:[],h:[]};
+let f='',q='';const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function save(){try{localStorage.setItem('cave',JSON.stringify(S))}catch(e){toast('Mémoire pleine : faites une sauvegarde')}}
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2200)}
+function open(h){$('sh').innerHTML=h;$('ov').classList.add('on')}
+function close(){$('ov').classList.remove('on');stopScan()}
+$('ov').onclick=e=>{if(e.target.id=='ov')close()};
+const match=b=>(!f||b.color==f)&&(!q||[b.name,b.vintage,b.region,b.appellation,b.notes].join(' ').toLowerCase().includes(q));
+const inBin=n=>S.b.filter(b=>b.bin==n);
+function render(){
+ $('sub').textContent=S.b.length+' bouteille'+(S.b.length>1?'s':'')+' sur 476';
+ $('chips').innerHTML=`<button class="chip ${f?'':'on'}" data-f="">Toutes</button>`+Object.keys(COL).map(k=>`<button class="chip ${f==k?'on':''}" data-f="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('');
+ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{f=c.dataset.f;render()});
+ const act=f||q;let h='';
+ for(let r=0;r<7;r++){h+='<div class="row">';for(let c=0;c<6;c++){const n=r*6+c+1,bs=inBin(n),cap=CAP[n],hit=act&&bs.some(match);
+  h+=`<button class="bin ${bs.length>=cap?'full':''} ${hit?'hit':''}" data-n="${n}"><span class="n">${n}</span>`+
+  bs.map(b=>`<span class="d ${act&&!match(b)?'dim':''}" style="background:${COL[b.color]||'#888'}"></span>`).join('')+
+  '<span class="d e"></span>'.repeat(Math.max(0,cap-bs.length))+`<span class="c">${bs.length}/${cap}</span></button>`}h+='</div>'}
+ $('cave').innerHTML=h;document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>showBin(+b.dataset.n));
+}
+$('q').oninput=e=>{q=e.target.value.toLowerCase().trim();render()};
+function showBin(n){const bs=inBin(n);
+ open(`<h2>Casier ${n}</h2><div class="lbl">${bs.length} sur ${CAP[n]} places</div>`+
+ (bs.length?bs.map(b=>`<div class="li" data-id="${b.id}"><span class="d" style="background:${COL[b.color]}"></span><div><b>${esc(b.name)}</b><div class="lbl">${esc(b.vintage||'')} ${esc(b.region||'')}</div></div></div>`).join(''):'<p class="lbl">Ce casier est vide.</p>')+
+ (bs.length<CAP[n]?`<button class="btn p" id="here">+ Ajouter ici</button>`:'<p class="lbl">Casier plein.</p>')+'<button class="btn" id="cl">Fermer</button>');
+ document.querySelectorAll('.li').forEach(l=>l.onclick=()=>detail(l.dataset.id));
+ if($('here'))$('here').onclick=()=>form(null,n);$('cl').onclick=close}
+function detail(id){const b=S.b.find(x=>x.id==id);if(!b)return;
+ open(`${b.photo?`<img class="ph" src="${b.photo}">`:''}<h2>${esc(b.name)}</h2>
+ <div class="stat">Millésime<b>${esc(b.vintage||'—')}</b></div><div class="stat">Type<b>${LB[b.color]}</b></div>
+ <div class="stat">Région<b>${esc(b.region||'—')}</b></div><div class="stat">Appellation<b>${esc(b.appellation||'—')}</b></div>
+ <div class="stat">Prix<b>${b.price?esc(b.price)+' €':'—'}</b></div><div class="stat">À boire avant<b>${esc(b.until||'—')}</b></div>
+ <div class="stat">Casier<b>${b.bin}</b></div>${b.notes?`<p>${esc(b.notes)}</p>`:''}
+ <button class="btn g" id="dr">Je l'ai bue</button><button class="btn" id="ed">Modifier</button><button class="btn x" id="rm">Supprimer</button><button class="btn" id="cl">Fermer</button>`);
+ $('dr').onclick=()=>{S.b=S.b.filter(x=>x.id!=id);b.drunk=new Date().toLocaleDateString('fr-FR');S.h.unshift(b);save();render();close();toast('Bonne dégustation !')};
+ $('ed').onclick=()=>form(b);$('rm').onclick=()=>{if(confirm('Supprimer cette bouteille ?')){S.b=S.b.filter(x=>x.id!=id);save();render();close()}};$('cl').onclick=close}
+let cur={};
+function form(b,bin){cur=b?{...b}:{color:'rouge',bin:bin||''};const v=k=>esc(cur[k]||'');
+ const opts=Object.keys(CAP).filter(n=>inBin(n).length<CAP[n]||n==cur.bin).map(n=>`<option value="${n}" ${n==cur.bin?'selected':''}>Casier ${n} (${CAP[n]-inBin(n).length} libres)</option>`).join('');
+ open(`<h2>${b?'Modifier':'Nouvelle bouteille'}</h2>
+ <div class="two"><button class="btn g" id="sc">Scanner le code-barres</button><label class="btn" style="margin-top:10px;text-align:center">Photo étiquette<input type="file" id="ph" accept="image/*" capture="environment" hidden></label></div>
+ <div id="scn"></div><img id="pv" class="ph" ${cur.photo?`src="${cur.photo}"`:'hidden'}>
+ <label>Nom du vin</label><input id="f_name" value="${v('name')}">
+ <div class="two"><div><label>Année</label><input id="f_vintage" inputmode="numeric" value="${v('vintage')}"></div><div><label>À boire avant</label><input id="f_until" inputmode="numeric" value="${v('until')}"></div></div>
+ <label>Type</label><div class="chips" id="fc">${Object.keys(COL).map(k=>`<button class="chip ${cur.color==k?'on':''}" data-k="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('')}</div>
+ <label>Région</label><input id="f_region" value="${v('region')}"><label>Appellation</label><input id="f_appellation" value="${v('appellation')}">
+ <div class="two"><div><label>Prix (€)</label><input id="f_price" inputmode="decimal" value="${v('price')}"></div><div><label>Code-barres</label><input id="f_code" inputmode="numeric" value="${v('code')}"></div></div>
+ <label>Notes</label><textarea id="f_notes" rows="2">${v('notes')}</textarea>
+ <label>Où la ranger ?</label><select id="f_bin"><option value="">Choisir un casier…</option>${opts}</select>
+ <button class="btn p" id="sv">Enregistrer</button><button class="btn" id="cl">Annuler</button>`);
+ document.querySelectorAll('#fc .chip').forEach(c=>c.onclick=()=>{cur.color=c.dataset.k;document.querySelectorAll('#fc .chip').forEach(x=>x.classList.toggle('on',x==c))});
+ $('ph').onchange=e=>photo(e.target.files[0]);$('sc').onclick=scan;$('f_code').onchange=e=>lookup(e.target.value);$('cl').onclick=close;
+ $('sv').onclick=()=>{const g=k=>$('f_'+k).value.trim();if(!g('name'))return toast('Donnez un nom au vin');if(!g('bin'))return toast('Choisissez un casier');
+  const o={...cur,name:g('name'),vintage:g('vintage'),until:g('until'),region:g('region'),appellation:g('appellation'),price:g('price'),code:g('code'),notes:g('notes'),bin:+g('bin')};
+  if(o.id)S.b=S.b.map(x=>x.id==o.id?o:x);else{o.id=Date.now()+'';S.b.push(o)}save();render();close();toast('Enregistrée')}}
+function photo(file){if(!file)return;const im=new Image();im.onload=()=>{const s=Math.min(1,500/im.width),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cur.photo=c.toDataURL('image/jpeg',.7);$('pv').src=cur.photo;$('pv').hidden=false};im.src=URL.createObjectURL(file)}
+function lookup(code){const k=[...S.b,...S.h].find(x=>x.code&&x.code==code);if(!k)return;['name','vintage','until','region','appellation','price'].forEach(i=>$('f_'+i).value=k[i]||'');cur.color=k.color;cur.photo=k.photo;
+ document.querySelectorAll('#fc .chip').forEach(x=>x.classList.toggle('on',x.dataset.k==k.color));if(k.photo){$('pv').src=k.photo;$('pv').hidden=false}toast('Bouteille reconnue !')}
+let stream,scanning=false;
+async function scan(){if(!('BarcodeDetector' in window)||!navigator.mediaDevices)return toast('Scan indisponible ici : tapez le code ou prenez une photo');
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})}catch(e){return toast('Caméra refusée')}
+ $('scn').innerHTML='<video id="vd" playsinline muted></video>';const vd=$('vd');vd.srcObject=stream;await vd.play();
+ const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});scanning=true;
+ (async function loop(){while(scanning){try{const r=await det.detect(vd);if(r.length){$('f_code').value=r[0].rawValue;stopScan();lookup(r[0].rawValue);toast('Code lu');return}}catch(e){}await new Promise(r=>setTimeout(r,250))}})()}
+function stopScan(){scanning=false;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}const s=$('scn');if(s)s.innerHTML=''}
+$('add').onclick=()=>form();
+$('menu').onclick=()=>{const by=k=>{const m={};S.b.forEach(b=>m[b[k]||'Autre']=(m[b[k]||'Autre']||0)+1);return m};const col=by('color'),reg=by('region');
+ const val=S.b.reduce((a,b)=>a+(parseFloat(String(b.price).replace(',','.'))||0),0);
+ open(`<h2>Ma cave en chiffres</h2><div class="stat">Bouteilles<b>${S.b.length}</b></div><div class="stat">Valeur estimée<b>${Math.round(val)} €</b></div>
+ ${Object.keys(col).map(k=>`<div class="stat">${LB[k]||k}<b>${col[k]}</b></div>`).join('')}
+ ${Object.entries(reg).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,n])=>`<div class="stat">${esc(k)}<b>${n}</b></div>`).join('')}
+ <button class="btn" id="hi">Bouteilles déjà bues (${S.h.length})</button><button class="btn g" id="ex">Sauvegarder ma cave</button>
+ <label class="btn" style="text-align:center">Restaurer une sauvegarde<input type="file" id="im" accept=".json" hidden></label><button class="btn" id="cl">Fermer</button>`);
+ $('cl').onclick=close;
+ $('hi').onclick=()=>open(`<h2>Déjà bues</h2>`+(S.h.map(b=>`<div class="li"><span class="d" style="background:${COL[b.color]}"></span><div><b>${esc(b.name)}</b><div class="lbl">${esc(b.vintage||'')} · bue le ${esc(b.drunk)}</div></div></div>`).join('')||'<p class="lbl">Aucune pour le moment.</p>')+'<button class="btn" id="cl">Fermer</button>');
+ $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='ma-cave-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
+ $('im').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.b))throw 0;if(confirm('Remplacer la cave actuelle par cette sauvegarde ?')){S={b:d.b,h:d.h||[]};save();render();close();toast('Cave restaurée')}}catch(x){toast('Fichier invalide')}};r.readAsText(e.target.files[0])}};
+render();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
