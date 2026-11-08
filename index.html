@@ -3,52 +3,53 @@
 <title>Ma Cave</title><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg">
 <meta name="theme-color" content="#1a1412">
 <style>
-:root{--bg:#1a1412;--wood:#2b1d15;--stone:#3a2a20;--ink:#f1e6d2;--mute:#a8957c;--brass:#c9a45c;--wine:#8e2236;--r:#8e2236;--b:#e6c85a;--ro:#ec9fae;--bu:#c9d6a3}
+:root{--bg:#150f0d;--wood:#2a1c14;--stone:#3a2a20;--ink:#f3e9d6;--mute:#b09c82;--brass:#d4af6a;--wine:#8e2236}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 system-ui,sans-serif;padding-bottom:90px}
+[hidden]{display:none!important}
+body{margin:0;background:radial-gradient(120% 60% at 50% 0,#2a1812,var(--bg) 70%) fixed;color:var(--ink);font:16px/1.45 system-ui,-apple-system,sans-serif;padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 h1,h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;margin:0}
-header{padding:calc(14px + env(safe-area-inset-top)) 16px 8px;display:flex;justify-content:space-between;align-items:center}
-h1{font-size:30px;color:var(--brass)}
-.sub{color:var(--mute);font-size:15px}
-.icon{background:none;border:1px solid var(--stone);color:var(--ink);border-radius:12px;width:46px;height:46px;font-size:22px}
-.tools{padding:0 16px 10px;position:sticky;top:0;background:var(--bg);z-index:5}
-input,select,textarea{width:100%;background:var(--wood);border:1px solid var(--stone);color:var(--ink);border-radius:12px;padding:13px;font:inherit}
-.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto}
-.chip{flex:none;border:1px solid var(--stone);background:none;color:var(--ink);border-radius:20px;padding:8px 14px;font:inherit;font-size:15px}
-.chip.on{background:var(--brass);color:#1a1412;border-color:var(--brass)}
-.chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-#cave{padding:4px 8px;overflow:auto}#cave svg{display:block;width:calc(100% * var(--z,1));height:auto}
-.row{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:-14px}
-.bin{position:relative;border:2px solid #5a4030;border-bottom:0;border-radius:999px 999px 0 0/70% 70% 0 0;background:linear-gradient(#34241a,#241812);min-height:92px;padding:20px 5px 18px;color:inherit;font:inherit;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-end;justify-content:center}
-.bin.full{border-color:var(--brass)}
-.bin .n{position:absolute;top:7px;left:0;right:0;text-align:center;font-size:12px;color:var(--mute)}
-.bin .c{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute)}
-.bin.hit{border-color:#fff;box-shadow:0 0 14px var(--brass)}
-.d{width:11px;height:11px;border-radius:50%;border:1px solid #0006}
-.d.e{background:none;border:1px dashed #6b523f}
-.d.dim{opacity:.18}
-#add{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));background:var(--wine);color:var(--ink);border:0;border-radius:16px;padding:18px;font:inherit;font-size:19px;font-weight:600;z-index:6;box-shadow:0 6px 20px #0008}
-.ov{position:fixed;inset:0;background:#000a;z-index:20;display:none;align-items:flex-end}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{font-size:32px;color:var(--brass);line-height:1.1}
+.sub{color:var(--mute);font-size:14px;margin-top:2px}
+.hb{display:flex;gap:8px}
+.icon{display:grid;place-items:center;background:#ffffff08;border:1px solid var(--stone);color:var(--ink);border-radius:14px;width:44px;height:44px;font-size:22px;line-height:1;padding:0}
+.tools{padding:0 16px 12px}
+input,select,textarea{width:100%;background:#00000030;border:1px solid var(--stone);color:var(--ink);border-radius:14px;padding:13px 14px;font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brass)}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--stone);background:#ffffff06;color:var(--ink);border-radius:20px;padding:9px 14px;font:inherit;font-size:14px;line-height:1}
+.chip.on{background:var(--brass);color:#1a1412;border-color:var(--brass);font-weight:600}
+.chip i{width:10px;height:10px;border-radius:50%}
+#cave{margin:0 12px;padding:10px;overflow:auto;border:1px solid #5a4030;border-radius:20px;background:linear-gradient(#1f1511,#120c0a)}
+#cave svg{display:block;width:calc(100% * var(--z,1));height:auto}
+#list{margin:0 16px}#list select{margin-bottom:6px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;align-items:center;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#150f0df0;border-top:1px solid var(--stone)}
+nav button{border:0;border-radius:16px;padding:14px 8px;font:inherit;font-size:15px;font-weight:600;background:none;color:var(--mute);text-align:center}
+nav button.on{color:var(--brass)}
+#add{background:var(--wine);color:var(--ink);font-size:16px;box-shadow:0 4px 16px #0008}
+.ov{position:fixed;inset:0;background:#000b;z-index:20;display:none;align-items:flex-end;justify-content:center}
 .ov.on{display:flex}
-.sheet{background:var(--wood);width:100%;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));animation:up .22s}
+.sheet{background:var(--wood);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));animation:up .22s}
 @keyframes up{from{transform:translateY(40px);opacity:0}}
-.sheet h2{font-size:25px;color:var(--brass);margin-bottom:12px}
-label{display:block;color:var(--mute);font-size:14px;margin:12px 0 4px}
-.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font:inherit;font-weight:600;margin-top:10px;background:var(--stone);color:var(--ink)}
+.sheet h2{font-size:26px;color:var(--brass);margin-bottom:6px;text-align:center}
+label{display:block;color:var(--mute);font-size:14px;margin:14px 0 5px}
+.btn{display:flex;align-items:center;justify-content:center;text-align:center;width:100%;border:0;border-radius:14px;padding:15px;font:inherit;font-weight:600;margin-top:10px;background:var(--stone);color:var(--ink)}
 .btn.p{background:var(--wine)}.btn.g{background:var(--brass);color:#1a1412}.btn.x{background:none;border:1px solid #7a3a3a;color:#e29a9a}
-.li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--stone)}
-.li .d{width:20px;height:20px}
+.li{display:flex;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid #ffffff12}
+.li .tx{flex:1;min-width:0}.li b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d{width:16px;height:16px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px #0006}
+.cb{flex:none;min-width:34px;height:34px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);display:grid;place-items:center;font-size:14px;font-weight:600}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ph{width:100%;max-height:240px;object-fit:contain;border-radius:12px;background:#0004;margin-bottom:8px}
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--brass);color:#1a1412;padding:10px 18px;border-radius:20px;z-index:40;display:none}
+.ph{display:block;width:100%;max-height:240px;object-fit:contain;border-radius:14px;background:#0004;margin:8px 0}
+#toast{position:fixed;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--brass);color:#1a1412;padding:10px 18px;border-radius:20px;z-index:40;display:none;text-align:center;max-width:90vw}
 video{width:100%;border-radius:14px;background:#000}
-.stat{display:flex;justify-content:space-between;padding:6px 0;color:var(--mute)}.stat b{color:var(--ink)}
-.lbl{color:var(--mute);font-size:15px}
+.stat{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:9px 0;border-bottom:1px solid #ffffff10;color:var(--mute)}.stat b{color:var(--ink);text-align:right;font-weight:600}
+.lbl{color:var(--mute);font-size:14px}.c{text-align:center}
 </style></head><body>
-<header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><div style="display:flex;gap:8px"><button class="icon" id="zo" aria-label="Dézoomer">−</button><button class="icon" id="zi" aria-label="Zoomer">+</button><button class="icon" id="menu" aria-label="Menu">☰</button></div></header>
+<header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><div class="hb"><button class="icon" id="zo" aria-label="Dézoomer">−</button><button class="icon" id="zi" aria-label="Zoomer">+</button><button class="icon" id="menu" aria-label="Menu">☰</button></div></header>
 <div class="tools"><input id="q" type="search" placeholder="Chercher : nom, année, région…"><div class="chips" id="chips"></div></div>
-<div id="cave"></div>
-<button id="add">+ Ajouter une bouteille</button>
+<div id="cave"></div><div id="list" hidden></div>
+<nav><button class="tab on" data-v="cave">Ma cave</button><button id="add">+ Ajouter</button><button class="tab" data-v="list">Liste</button></nav>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div><div id="toast"></div>
 <script>
 const CAP={};for(let i=1;i<=42;i++)CAP[i]=15;[1,2,3,4,5,6,37].forEach(i=>CAP[i]=3);[12,13,24,25,36].forEach(i=>CAP[i]=6);[38,39,40,41,42].forEach(i=>CAP[i]=10);
@@ -61,7 +62,7 @@ function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';set
 function open(h){$('sh').innerHTML=h;$('ov').classList.add('on')}
 function close(){$('ov').classList.remove('on');stopScan()}
 $('ov').onclick=e=>{if(e.target.id=='ov')close()};
-const match=b=>(!f||b.color==f)&&(!q||[b.name,b.vintage,b.region,b.appellation,b.notes].join(' ').toLowerCase().includes(q));
+const Y=new Date().getFullYear();const match=b=>(!f||(f=='soon'?(b.until&&+b.until<=Y+1):b.color==f))&&(!q||[b.name,b.vintage,b.region,b.appellation,b.notes].join(' ').toLowerCase().includes(q));
 const inBin=n=>S.b.filter(b=>b.bin==n);
 const CY0=58,RW=539,FL=308,M=6;
 const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
@@ -71,34 +72,39 @@ const GEO={};
 for(let j=0;j<6;j++){const n=j+1,jx=j*100,cy=CY0;
  const p=j==0?`M0,0H50V${cy-50}A50,50 0 0 0 0,${cy}Z`:`M${jx-50},0H${jx+50}V${cy-50}A50,50 0 0 0 ${jx},${cy}A50,50 0 0 0 ${jx-50},${cy-50}Z`;
  const ins=(x,y)=>x>=M&&x<=RW-M&&y>=M&&y<=cy-2&&Math.abs(x-jx)<50&&dist(x,y,jx-50,cy)>50+M&&dist(x,y,jx+50,cy)>50+M;
- GEO[n]={p,lab:[j==0?14:jx,-9],...slotsFor(ins,jx,cy-30,CAP[n])}}
+ GEO[n]={p,lab:[j==0?14:jx,-13],...slotsFor(ins,jx,cy-30,CAP[n])}}
 for(let r=0;r<6;r++)for(let c=0;c<6;c++){const n=7+r*6+c,cx=(r%2?0:50)+100*c,cy=CY0+50*r,cu=r<5;
  const vx=(Math.max(cx-50,0)+Math.min(cx+50,RW))/2;
  const p=cu?`M${cx-50},${cy}A50,50 0 0 1 ${cx+50},${cy}A50,50 0 0 0 ${cx},${cy+50}A50,50 0 0 0 ${cx-50},${cy}Z`:`M${cx-50},${cy}A50,50 0 0 1 ${cx+50},${cy}Z`;
  const ins=(x,y)=>{if(x<M||x>RW-M)return false;
-  if(y<=(cu?cy:cy-M))return dist(x,y,cx,cy)<=50-M;
+  if(y<=(cu?cy:cy-M))return y>=cy-27&&dist(x,y,cx,cy)<=50-M;
   return cu&&y<=cy+50-M&&Math.abs(x-cx)<50-M&&dist(x,y,cx-50,cy+50)>50+M&&dist(x,y,cx+50,cy+50)>50+M};
- GEO[n]={p,lab:[vx,cy-38],...slotsFor(ins,vx,cy+3,CAP[n])}}
+ GEO[n]={p,lab:[vx,cy-38],...slotsFor(ins,vx,cy+8,CAP[n])}}
 let Z=1;
 function render(){
  $('sub').textContent=S.b.length+' bouteille'+(S.b.length>1?'s':'')+' sur 476';
- $('chips').innerHTML=`<button class="chip ${f?'':'on'}" data-f="">Toutes</button>`+Object.keys(COL).map(k=>`<button class="chip ${f==k?'on':''}" data-f="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('');
+ $('chips').innerHTML=`<button class="chip ${f?'':'on'}" data-f="">Toutes</button>`+Object.keys(COL).map(k=>`<button class="chip ${f==k?'on':''}" data-f="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('')+`<button class="chip ${f=='soon'?'on':''}" data-f="soon">À boire bientôt</button>`;
  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{f=c.dataset.f;render()});
  const act=f||q;
- let h=`<svg viewBox="-10 -18 559 340"><defs><clipPath id="cl"><rect x="0" y="0" width="${RW}" height="${FL}"/></clipPath><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0,6L6,0" stroke="#c9a45c" stroke-width=".8"/></pattern><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a20"/><stop offset="1" stop-color="#241812"/></linearGradient></defs>
+ let h=`<svg viewBox="-10 -22 559 344"><defs><clipPath id="cl"><rect x="0" y="0" width="${RW}" height="${FL}"/></clipPath><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0,6L6,0" stroke="#c9a45c" stroke-width=".8"/></pattern><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a20"/><stop offset="1" stop-color="#241812"/></linearGradient></defs>
  <rect x="-6" y="-6" width="${RW+6}" height="6" fill="url(#ht)"/><rect x="-6" y="0" width="6" height="${FL}" fill="url(#ht)"/><g clip-path="url(#cl)">`;
  for(let n=1;n<=42;n++){const g=GEO[n],bs=inBin(n),hit=act&&bs.some(match),full=bs.length>=g.pts.length;
   h+=`<g class="bn" data-n="${n}" style="cursor:pointer"><path d="${g.p}" fill="url(#gr)" stroke="${hit?'#fff':full?'#c9a45c':'#6b4a34'}" stroke-width="${hit?2.2:1.2}"/>`+
-  g.pts.map((p,i)=>{const b=bs[i];return b?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="${COL[b.color]||'#888'}" stroke="#0007" stroke-width=".6" opacity="${act&&!match(b)?.18:1}"/>`:`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="none" stroke="#6b523f" stroke-width=".7" stroke-dasharray="1.6 1.6"/>`}).join('')+'</g>'}
+  g.pts.map((p,i)=>{const b=bs[i];return b?`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="${COL[b.color]||'#888'}" stroke="#0007" stroke-width=".6" opacity="${act&&!match(b)?.18:1}"/><circle cx="${(p[0]-g.r*.3).toFixed(1)}" cy="${(p[1]-g.r*.3).toFixed(1)}" r="${(g.r*.3).toFixed(1)}" fill="#fff" opacity="${act&&!match(b)?0:.35}"/>`:`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${g.r}" fill="none" stroke="#6b523f" stroke-width=".7" stroke-dasharray="1.6 1.6"/>`}).join('')+'</g>'}
  h+=`</g><line x1="0" y1="${FL}" x2="${RW}" y2="${FL}" stroke="#c9a45c" stroke-width="2"/><line x1="${RW}" y1="0" x2="${RW}" y2="${FL}" stroke="#6b4a34" stroke-width="1"/>`;
- for(let n=1;n<=42;n++){const g=GEO[n];h+=`<text x="${g.lab[0]}" y="${g.lab[1]}" text-anchor="middle" font-size="8" fill="#a8957c" pointer-events="none">${n}</text>`}
+ for(let n=1;n<=42;n++){const g=GEO[n],full=inBin(n).length>=g.pts.length,x=g.lab[0],y=g.lab[1];h+=`<g pointer-events="none"><circle cx="${x}" cy="${y}" r="6.5" fill="${full?'#d4af6a':'#2a1c14'}" stroke="#d4af6a" stroke-width=".8"/><text x="${x}" y="${y+2.7}" text-anchor="middle" font-size="7.5" font-weight="600" font-family="system-ui,sans-serif" fill="${full?'#1a1412':'#e9dcc4'}">${n}</text></g>`}
  $('cave').innerHTML=h+'</svg>';$('cave').style.setProperty('--z',Z);
- document.querySelectorAll('.bn').forEach(b=>b.onclick=()=>showBin(+b.dataset.n));
+ document.querySelectorAll('.bn').forEach(b=>b.onclick=()=>showBin(+b.dataset.n));renderList();
 }
 $('zi').onclick=()=>{Z=Math.min(3,Z+.5);render()};$('zo').onclick=()=>{Z=Math.max(1,Z-.5);render()};
+let V='cave',SO='nom';
+function renderList(){const L=S.b.filter(match).sort((a,b)=>SO=='nom'?a.name.localeCompare(b.name):SO=='annee'?(+a.vintage||9999)-(+b.vintage||9999):a.bin-b.bin);
+ $('list').innerHTML='<select id="so" aria-label="Trier"><option value="nom">Trier par nom</option><option value="annee">Trier par année</option><option value="casier">Trier par casier</option></select>'+(L.length?L.map(b=>`<div class="li" data-id="${b.id}"><span class="d" style="background:${COL[b.color]}"></span><div class="tx"><b>${esc(b.name)}</b><div class="lbl">${esc([b.vintage,b.region].filter(Boolean).join(' · '))}</div></div><span class="cb">${b.bin}</span></div>`).join(''):'<p class="lbl c">Aucune bouteille à afficher.</p>');
+ $('so').value=SO;$('so').onchange=e=>{SO=e.target.value;renderList()};document.querySelectorAll('#list .li').forEach(l=>l.onclick=()=>detail(l.dataset.id))}
+function setView(v){V=v;$('cave').hidden=v!='cave';$('list').hidden=v!='list';$('zo').hidden=$('zi').hidden=v!='cave';document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('on',t.dataset.v==v);t.onclick=()=>setView(t.dataset.v)})}
 $('q').oninput=e=>{q=e.target.value.toLowerCase().trim();render()};
 function showBin(n){const bs=inBin(n);
- open(`<h2>Casier ${n}</h2><div class="lbl">${bs.length} sur ${CAP[n]} places</div>`+
+ open(`<h2>Casier ${n}</h2><div class="lbl c">${bs.length} sur ${CAP[n]} places</div>`+
  (bs.length?bs.map(b=>`<div class="li" data-id="${b.id}"><span class="d" style="background:${COL[b.color]}"></span><div><b>${esc(b.name)}</b><div class="lbl">${esc(b.vintage||'')} ${esc(b.region||'')}</div></div></div>`).join(''):'<p class="lbl">Ce casier est vide.</p>')+
  (bs.length<CAP[n]?`<button class="btn p" id="here">+ Ajouter ici</button>`:'<p class="lbl">Casier plein.</p>')+'<button class="btn" id="cl">Fermer</button>');
  document.querySelectorAll('.li').forEach(l=>l.onclick=()=>detail(l.dataset.id));
@@ -108,7 +114,7 @@ function detail(id){const b=S.b.find(x=>x.id==id);if(!b)return;
  <div class="stat">Millésime<b>${esc(b.vintage||'—')}</b></div><div class="stat">Type<b>${LB[b.color]}</b></div>
  <div class="stat">Région<b>${esc(b.region||'—')}</b></div><div class="stat">Appellation<b>${esc(b.appellation||'—')}</b></div>
  <div class="stat">Prix<b>${b.price?esc(b.price)+' €':'—'}</b></div><div class="stat">À boire avant<b>${esc(b.until||'—')}</b></div>
- <div class="stat">Casier<b>${b.bin}</b></div>${b.notes?`<p>${esc(b.notes)}</p>`:''}
+ <div class="stat">Note<b>${b.note?"★".repeat(b.note):"—"}</b></div><div class="stat">Casier<b>${b.bin}</b></div>${b.notes?`<p>${esc(b.notes)}</p>`:''}
  <button class="btn g" id="dr">Je l'ai bue</button><button class="btn" id="ed">Modifier</button><button class="btn x" id="rm">Supprimer</button><button class="btn" id="cl">Fermer</button>`);
  $('dr').onclick=()=>{S.b=S.b.filter(x=>x.id!=id);b.drunk=new Date().toLocaleDateString('fr-FR');S.h.unshift(b);save();render();close();toast('Bonne dégustation !')};
  $('ed').onclick=()=>form(b);$('rm').onclick=()=>{if(confirm('Supprimer cette bouteille ?')){S.b=S.b.filter(x=>x.id!=id);save();render();close()}};$('cl').onclick=close}
@@ -123,14 +129,14 @@ function form(b,bin){cur=b?{...b}:{color:'rouge',bin:bin||''};const v=k=>esc(cur
  <label>Type</label><div class="chips" id="fc">${Object.keys(COL).map(k=>`<button class="chip ${cur.color==k?'on':''}" data-k="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('')}</div>
  <label>Région</label><input id="f_region" value="${v('region')}"><label>Appellation</label><input id="f_appellation" value="${v('appellation')}">
  <div class="two"><div><label>Prix (€)</label><input id="f_price" inputmode="decimal" value="${v('price')}"></div><div><label>Code-barres</label><input id="f_code" inputmode="numeric" value="${v('code')}"></div></div>
- <label>Notes</label><textarea id="f_notes" rows="2">${v('notes')}</textarea>
+ <div class="two"><div><label>Note</label><select id="f_note"><option value="">—</option>${[1,2,3,4,5].map(i=>`<option value="${i}" ${cur.note==i?"selected":""}>${"★".repeat(i)}</option>`).join("")}</select></div>${b?"":'<div><label>Exemplaires</label><input id="f_qty" inputmode="numeric" value="1"></div>'}</div><label>Notes</label><textarea id="f_notes" rows="2">${v('notes')}</textarea>
  <label>Où la ranger ?</label><select id="f_bin"><option value="">Choisir un casier…</option>${opts}</select>
  <button class="btn p" id="sv">Enregistrer</button><button class="btn" id="cl">Annuler</button>`);
  document.querySelectorAll('#fc .chip').forEach(c=>c.onclick=()=>{cur.color=c.dataset.k;document.querySelectorAll('#fc .chip').forEach(x=>x.classList.toggle('on',x==c))});
  $('ph').onchange=e=>photo(e.target.files[0]);$('sc').onclick=scan;$('f_code').onchange=e=>lookup(e.target.value);$('cl').onclick=close;
  $('sv').onclick=()=>{const g=k=>$('f_'+k).value.trim();if(!g('name'))return toast('Donnez un nom au vin');if(!g('bin'))return toast('Choisissez un casier');
-  const o={...cur,name:g('name'),vintage:g('vintage'),until:g('until'),region:g('region'),appellation:g('appellation'),price:g('price'),code:g('code'),notes:g('notes'),bin:+g('bin')};
-  if(o.id)S.b=S.b.map(x=>x.id==o.id?o:x);else{o.id=Date.now()+'';S.b.push(o)}save();render();close();toast('Enregistrée')}}
+  const o={...cur,name:g('name'),vintage:g('vintage'),until:g('until'),region:g('region'),appellation:g('appellation'),price:g('price'),code:g('code'),notes:g('notes'),bin:+g('bin'),note:g('note')};
+  if(o.id)S.b=S.b.map(x=>x.id==o.id?o:x);else{const free=CAP[o.bin]-inBin(o.bin).length;let k=Math.max(1,parseInt(g('qty'))||1);if(k>free){k=free;toast('Seulement '+free+' place(s) libre(s)')}for(let i=0;i<k;i++)S.b.push({...o,id:Date.now()+'-'+i})}save();render();close();toast('Enregistrée')}}
 function photo(file){if(!file)return;const im=new Image();im.onload=()=>{const s=Math.min(1,500/im.width),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cur.photo=c.toDataURL('image/jpeg',.7);$('pv').src=cur.photo;$('pv').hidden=false};im.src=URL.createObjectURL(file)}
 function lookup(code){const k=[...S.b,...S.h].find(x=>x.code&&x.code==code);if(!k)return;['name','vintage','until','region','appellation','price'].forEach(i=>$('f_'+i).value=k[i]||'');cur.color=k.color;cur.photo=k.photo;
  document.querySelectorAll('#fc .chip').forEach(x=>x.classList.toggle('on',x.dataset.k==k.color));if(k.photo){$('pv').src=k.photo;$('pv').hidden=false}toast('Bouteille reconnue !')}
@@ -153,5 +159,5 @@ $('menu').onclick=()=>{const by=k=>{const m={};S.b.forEach(b=>m[b[k]||'Autre']=(
  $('hi').onclick=()=>open(`<h2>Déjà bues</h2>`+(S.h.map(b=>`<div class="li"><span class="d" style="background:${COL[b.color]}"></span><div><b>${esc(b.name)}</b><div class="lbl">${esc(b.vintage||'')} · bue le ${esc(b.drunk)}</div></div></div>`).join('')||'<p class="lbl">Aucune pour le moment.</p>')+'<button class="btn" id="cl">Fermer</button>');
  $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='ma-cave-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
  $('im').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.b))throw 0;if(confirm('Remplacer la cave actuelle par cette sauvegarde ?')){S={b:d.b,h:d.h||[]};save();render();close();toast('Cave restaurée')}}catch(x){toast('Fichier invalide')}};r.readAsText(e.target.files[0])}};
-render();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+setView('cave');render();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
