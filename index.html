@@ -45,10 +45,19 @@ label{display:block;color:var(--mute);font-size:14px;margin:14px 0 5px}
 video{width:100%;border-radius:14px;background:#000}
 .stat{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:9px 0;border-bottom:1px solid #ffffff10;color:var(--mute)}.stat b{color:var(--ink);text-align:right;font-weight:600}
 .lbl{color:var(--mute);font-size:14px}.c{text-align:center}
+#kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 14px}
+.k{background:#ffffff08;border:1px solid var(--stone);border-radius:16px;padding:12px 6px;text-align:center}
+.k b{display:block;font:400 26px/1.1 Georgia,serif;color:var(--brass)}.k span{font-size:12px;color:var(--mute)}
+#leg{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin:14px 16px 0;color:var(--mute);font-size:14px}
+#leg span{display:inline-flex;align-items:center;gap:7px}#leg i{width:11px;height:11px;border-radius:50%}
+#leg p{flex-basis:100%;text-align:center;margin:6px 0 0}
+.bar{height:6px;border-radius:3px;background:#00000040;margin:8px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brass)}
+.band{height:6px;border-radius:3px;margin:-8px 0 14px}
 </style></head><body>
 <header><div><h1>Ma Cave</h1><div class="sub" id="sub"></div></div><div class="hb"><button class="icon" id="zo" aria-label="Dézoomer">−</button><button class="icon" id="zi" aria-label="Zoomer">+</button><button class="icon" id="menu" aria-label="Menu">☰</button></div></header>
+<div id="kpi"></div>
 <div class="tools"><input id="q" type="search" placeholder="Chercher : nom, année, région…"><div class="chips" id="chips"></div></div>
-<div id="cave"></div><div id="list" hidden></div>
+<div id="cave"></div><div id="leg"></div><div id="list" hidden></div>
 <nav><button class="tab on" data-v="cave">Ma cave</button><button id="add">+ Ajouter</button><button class="tab" data-v="list">Liste</button></nav>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div><div id="toast"></div>
 <script>
@@ -83,6 +92,9 @@ for(let r=0;r<6;r++)for(let c=0;c<6;c++){const n=7+r*6+c,cx=(r%2?0:50)+100*c,cy=
 let Z=1;
 function render(){
  $('sub').textContent=S.b.length+' bouteille'+(S.b.length>1?'s':'')+' sur 476';
+ const soon=S.b.filter(b=>b.until&&+b.until<=Y+1).length;
+ $('kpi').innerHTML=[[S.b.length,'bouteilles'],[476-S.b.length,'places libres'],[soon,'à boire bientôt']].map(([n,t])=>`<div class="k"><b>${n}</b><span>${t}</span></div>`).join('');
+ $('leg').innerHTML=Object.keys(COL).map(k=>`<span><i style="background:${COL[k]}"></i>${LB[k]} ${S.b.filter(b=>b.color==k).length}</span>`).join('')+(S.b.length?'':'<p>Votre cave est vide. Touchez « + Ajouter » pour ranger une première bouteille.</p>');
  $('chips').innerHTML=`<button class="chip ${f?'':'on'}" data-f="">Toutes</button>`+Object.keys(COL).map(k=>`<button class="chip ${f==k?'on':''}" data-f="${k}"><i style="background:${COL[k]}"></i>${LB[k]}</button>`).join('')+`<button class="chip ${f=='soon'?'on':''}" data-f="soon">À boire bientôt</button>`;
  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{f=c.dataset.f;render()});
  const act=f||q;
@@ -101,16 +113,16 @@ let V='cave',SO='nom';
 function renderList(){const L=S.b.filter(match).sort((a,b)=>SO=='nom'?a.name.localeCompare(b.name):SO=='annee'?(+a.vintage||9999)-(+b.vintage||9999):a.bin-b.bin);
  $('list').innerHTML='<select id="so" aria-label="Trier"><option value="nom">Trier par nom</option><option value="annee">Trier par année</option><option value="casier">Trier par casier</option></select>'+(L.length?L.map(b=>`<div class="li" data-id="${b.id}"><span class="d" style="background:${COL[b.color]}"></span><div class="tx"><b>${esc(b.name)}</b><div class="lbl">${esc([b.vintage,b.region].filter(Boolean).join(' · '))}</div></div><span class="cb">${b.bin}</span></div>`).join(''):'<p class="lbl c">Aucune bouteille à afficher.</p>');
  $('so').value=SO;$('so').onchange=e=>{SO=e.target.value;renderList()};document.querySelectorAll('#list .li').forEach(l=>l.onclick=()=>detail(l.dataset.id))}
-function setView(v){V=v;$('cave').hidden=v!='cave';$('list').hidden=v!='list';$('zo').hidden=$('zi').hidden=v!='cave';document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('on',t.dataset.v==v);t.onclick=()=>setView(t.dataset.v)})}
+function setView(v){V=v;$('cave').hidden=v!='cave';$('list').hidden=v!='list';$('zo').hidden=$('zi').hidden=$('leg').hidden=v!='cave';document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('on',t.dataset.v==v);t.onclick=()=>setView(t.dataset.v)})}
 $('q').oninput=e=>{q=e.target.value.toLowerCase().trim();render()};
 function showBin(n){const bs=inBin(n);
- open(`<h2>Casier ${n}</h2><div class="lbl c">${bs.length} sur ${CAP[n]} places</div>`+
+ open(`<h2>Casier ${n}</h2><div class="lbl c">${bs.length} sur ${CAP[n]} places</div><div class="bar"><i style="width:${bs.length/CAP[n]*100}%"></i></div>`+
  (bs.length?bs.map(b=>`<div class="li" data-id="${b.id}"><span class="d" style="background:${COL[b.color]}"></span><div><b>${esc(b.name)}</b><div class="lbl">${esc(b.vintage||'')} ${esc(b.region||'')}</div></div></div>`).join(''):'<p class="lbl">Ce casier est vide.</p>')+
  (bs.length<CAP[n]?`<button class="btn p" id="here">+ Ajouter ici</button>`:'<p class="lbl">Casier plein.</p>')+'<button class="btn" id="cl">Fermer</button>');
  document.querySelectorAll('.li').forEach(l=>l.onclick=()=>detail(l.dataset.id));
  if($('here'))$('here').onclick=()=>form(null,n);$('cl').onclick=close}
 function detail(id){const b=S.b.find(x=>x.id==id);if(!b)return;
- open(`${b.photo?`<img class="ph" src="${b.photo}">`:''}<h2>${esc(b.name)}</h2>
+ open(`<div class="band" style="background:${COL[b.color]}"></div>${b.photo?`<img class="ph" src="${b.photo}">`:''}<h2>${esc(b.name)}</h2>
  <div class="stat">Millésime<b>${esc(b.vintage||'—')}</b></div><div class="stat">Type<b>${LB[b.color]}</b></div>
  <div class="stat">Région<b>${esc(b.region||'—')}</b></div><div class="stat">Appellation<b>${esc(b.appellation||'—')}</b></div>
  <div class="stat">Prix<b>${b.price?esc(b.price)+' €':'—'}</b></div><div class="stat">À boire avant<b>${esc(b.until||'—')}</b></div>
